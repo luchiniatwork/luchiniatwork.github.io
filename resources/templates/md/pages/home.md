@@ -14,3 +14,9 @@
 * Past and future [talks](talks).
 * A bit on [distance running](distance-running).
 * Here are some [blog posts](archives) or organized by [tags](tags).
+
+***
+
+### Languages over the last 30 days
+
+![](https://wakatime.com/share/@cddfc6a9-4a4c-4b0c-b41b-f128d230bf23/e2dddf48-a312-4b01-a7da-3f71984372a7.svg)
