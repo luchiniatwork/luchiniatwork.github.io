@@ -1,0 +1,18 @@
+{:deps
+ {org.clojure/clojure {:mvn/version "1.10.0"}
+  org.clojure/clojurescript {:mvn/version "1.10.520"}}
+
+ :aliases
+ {:infra
+  {:extra-paths ["infra"]
+
+   :main-opts ["--main" "build"]}
+  
+  :infra2
+  {:extra-paths ["infra"]
+
+   :main-opts ["--main" "cljs.main"
+               "--target" "node"
+               "--compile" "main-test"
+               #_"--compile-opts" #_{:install-deps true
+                                     :npm-deps {"lodash" "4.17.4"}}]}}}
