@@ -16,4 +16,3 @@ pom.xml.asc
 .nrepl-port
 index.js
 node_modules/
-out/

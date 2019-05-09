@@ -1,13 +1,13 @@
-(ns build
+(ns infra.build
   (:require [cljs.build.api :as b]))
 
 (defn -main [& args]
-  (b/build "infra"
+  (b/build "infra_scripts"
            {:output-dir "out"
             :output-to "index.js"
             :target :nodejs
             :optimizations :simple
-            :main 'main-test
+            :main 'infra.main
             :install-deps true
             :npm-deps {"@pulumi/pulumi" "latest"
                        "@pulumi/aws"    "latest"

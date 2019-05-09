@@ -1,21 +1,19 @@
-(ns main-test
+(ns infra.s3
   (:require ["@pulumi/aws" :as aws]
             ["@pulumi/pulumi" :as pulumi]
             ["fs" :as fs]
             ["mime" :as mime]
             ["path" :as path]
-            [clojure.string :as string]
-            [goog :as goog]))
+            [clojure.string :as string]))
 
-
-(defn public-read-policy-for-bucket [bucket-name]
+(defn ^:private public-read-policy-for-bucket [bucket-name]
   (clj->js {"Version" "2012-10-17"
             "Statement" [{"Effect" "Allow"
                           "Principal" "*"
                           "Action" ["s3:GetObject"]
                           "Resource" [(str "arn:aws:s3:::" bucket-name "/*")]}]}))
 
-(defn copy-to-bucket
+(defn ^:private copy-to-bucket
   ([source bucket]
    (copy-to-bucket source bucket ""))
   ([source bucket base-path]
@@ -33,23 +31,16 @@
                                           :contentType content-type})
          (copy-to-bucket file-path bucket (path/join base-path file)))))))
 
-
-(def site-bucket (aws/s3.Bucket. "luchini.nyc-website-bucket"
-                                 (clj->js {:website {:indexDocument "index"
-                                                     :errorDocument "404"}})))
-
-(def bucket-policy
-  (aws/s3.BucketPolicy.
-   "bucketPolicy"
-   #js {:bucket (.-bucket site-bucket)
-        :policy (.apply (.-bucket site-bucket) public-read-policy-for-bucket)}))
-
-(defn -main [& args]
-  (copy-to-bucket (path/join "resources" "public")
-                  site-bucket))
-
-
-(set! *main-cli-fn* -main)
-
-(goog/exportSymbol "bucketName" (.-bucket site-bucket))
-(goog/exportSymbol "websiteUrl" (.-websiteEndpoint site-bucket))
+(defn run []
+  (let [site-bucket (aws/s3.Bucket. "luchini.nyc-website-bucket"
+                                    (clj->js {:website {:indexDocument "index"
+                                                        :errorDocument "404"}}))
+        bucket-policy
+        (aws/s3.BucketPolicy.
+         "bucketPolicy"
+         #js {:bucket (.-bucket site-bucket)
+              :policy (.apply (.-bucket site-bucket) public-read-policy-for-bucket)})]
+    (copy-to-bucket (path/join "resources" "public")
+                    site-bucket)
+    {:bucket-name (.-bucket site-bucket)
+     :website-url (.-websiteEndpoint site-bucket)}))
