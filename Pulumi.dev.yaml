@@ -1,2 +1,4 @@
 config:
   aws:region: us-east-1
+  luchini.nyc:path-to-website-contents: resources/public/
+  luchini.nyc:target-domain: luchini.nyc
