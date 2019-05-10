@@ -6,12 +6,12 @@
             ["path" :as path]
             [clojure.string :as string]))
 
-#_(defn ^:private public-read-policy-for-bucket [bucket-name]
-    (clj->js {"Version" "2012-10-17"
-              "Statement" [{"Effect" "Allow"
-                            "Principal" "*"
-                            "Action" ["s3:GetObject"]
-                            "Resource" [(str "arn:aws:s3:::" bucket-name "/*")]}]}))
+(defn ^:private public-read-policy-for-bucket [bucket-name]
+  (clj->js {"Version" "2012-10-17"
+            "Statement" [{"Effect" "Allow"
+                          "Principal" "*"
+                          "Action" ["s3:GetObject"]
+                          "Resource" [(str "arn:aws:s3:::" bucket-name "/*")]}]}))
 
 (defn ^:private copy-to-bucket
   ([source bucket]
@@ -31,18 +31,23 @@
                                           :contentType content-type})
          (copy-to-bucket file-path bucket (path/join base-path file)))))))
 
-(defn run [source target-domain]
+(defn run [{:keys [config/path-to-website-contents
+                   config/target-domain] :as opts}]
   (let [site-bucket (aws/s3.Bucket. (str target-domain "-content")
                                     (clj->js {:acl "public-read"
                                               :website {:indexDocument "index"
                                                         :errorDocument "404"}}))
         logs-bucket (aws/s3.Bucket. (str target-domain "-logs")
-                                    #js {:acl "private"})
-        #_bucket-policy
-        #_(aws/s3.BucketPolicy.
-           "bucketPolicy"
-           #js {:bucket (.-bucket site-bucket)
-                :policy (.apply (.-bucket site-bucket) public-read-policy-for-bucket)})]
-    (copy-to-bucket source site-bucket)
-    {:bucket-name (.-bucket site-bucket)
-     :website-url (.-websiteEndpoint site-bucket)}))
+                                    #js {:acl "private"})]
+    (aws/s3.BucketPolicy.
+     "bucketPolicy"
+     #js {:bucket (.-bucket site-bucket)
+          :policy (.apply (.-bucket site-bucket) public-read-policy-for-bucket)})
+    (copy-to-bucket path-to-website-contents site-bucket)
+    (merge opts {:s3/content-bucket {:name (.-bucket site-bucket)
+                                     :domain-name (.-bucketDomainName site-bucket)
+                                     :arn (.-arn site-bucket)
+                                     :website-endpoint (.-websiteEndpoint site-bucket)}
+                 :s3/logs-bucket {:name (.-bucket logs-bucket)
+                                  :domain-name (.-bucketDomainName logs-bucket)
+                                  :arn (.-arn logs-bucket)}})))
