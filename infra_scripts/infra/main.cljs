@@ -17,7 +17,9 @@
 (defn init-config-map [config-obj]
   {:config/path-to-website-contents (.require config-obj "path-to-website-contents")
    :config/target-domain (.require config-obj "target-domain")
-   :config/certificate-arn (.require config-obj "certificate-arn")})
+   :config/certificate-arn (.require config-obj "certificate-arn")
+   :config/cache-max-age (or (.get config-obj "cache-max-age") (* 24 60 60))
+   :config/cache-s-max-age (or (.get config-obj "cache-s-max-age") (* 7 24 60 60))})
 
 (let [infra-map (-> (pulumi/Config.)
                     init-config-map

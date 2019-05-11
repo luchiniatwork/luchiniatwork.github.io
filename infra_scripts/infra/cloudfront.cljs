@@ -10,6 +10,7 @@
                                  default-ttl-minutes
                                  max-ttl-minutes]}]
   (clj->js {:enabled true
+            :compress true
             :aliases [target-domain]
             :origins [{:originId content-bucket-arn
                        :domainName content-bucket-website-endpoint
@@ -41,6 +42,7 @@
 
 (defn run [{:keys [config/target-domain
                    config/certificate-arn
+                   config/cache-s-max-age
                    s3/content-bucket
                    s3/logs-bucket] :as opts}]
   (let [cdn (aws/cloudfront.Distribution.
@@ -51,7 +53,7 @@
                :content-bucket-website-endpoint (:website-endpoint content-bucket)
                :certificate-arn certificate-arn
                :logs-bucket-domain-name (:domain-name logs-bucket)
-               :default-ttl-minutes (* 60 10)
-               :max-ttl-minutes (* 60 10)}))]
+               :default-ttl-minutes cache-s-max-age
+               :max-ttl-minutes cache-s-max-age}))]
     (merge opts {:cloudfront/domain-name (.-domainName cdn)
                  :cloudfront/hosted-zone-id (.-hostedZoneId cdn)})))

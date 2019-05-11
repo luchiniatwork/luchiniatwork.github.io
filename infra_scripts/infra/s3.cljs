@@ -14,9 +14,9 @@
                           "Resource" [(str "arn:aws:s3:::" bucket-name "/*")]}]}))
 
 (defn ^:private copy-to-bucket
-  ([source bucket]
-   (copy-to-bucket source bucket ""))
-  ([source bucket base-path]
+  ([source bucket cache-max-age cache-s-max-age]
+   (copy-to-bucket source bucket cache-max-age cache-s-max-age ""))
+  ([source bucket cache-max-age cache-s-max-age base-path]
    (doseq [file (fs/readdirSync source)]
      (let [file-path (path/join source file)
            file? (-> file-path fs/statSync .isFile)
@@ -28,11 +28,18 @@
          (aws/s3.BucketObject. file' #js {:bucket bucket
                                           :key file'
                                           :source (pulumi/asset.FileAsset. file-path)
-                                          :contentType content-type})
-         (copy-to-bucket file-path bucket (path/join base-path file)))))))
+                                          :contentType content-type
+                                          :cacheControl (str "public, max-age="
+                                                             cache-max-age
+                                                             ", s-maxage="
+                                                             cache-s-max-age)})
+         (copy-to-bucket file-path bucket cache-max-age cache-s-max-age
+                         (path/join base-path file)))))))
 
 (defn run [{:keys [config/path-to-website-contents
-                   config/target-domain] :as opts}]
+                   config/target-domain
+                   config/cache-max-age
+                   config/cache-s-max-age] :as opts}]
   (let [site-bucket (aws/s3.Bucket. (str target-domain "-content")
                                     (clj->js {:acl "public-read"
                                               :website {:indexDocument "index"
@@ -43,7 +50,7 @@
      "bucketPolicy"
      #js {:bucket (.-bucket site-bucket)
           :policy (.apply (.-bucket site-bucket) public-read-policy-for-bucket)})
-    (copy-to-bucket path-to-website-contents site-bucket)
+    (copy-to-bucket path-to-website-contents site-bucket cache-max-age cache-s-max-age)
     (merge opts {:s3/content-bucket {:name (.-bucket site-bucket)
                                      :domain-name (.-bucketDomainName site-bucket)
                                      :arn (.-arn site-bucket)
