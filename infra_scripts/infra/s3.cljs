@@ -29,7 +29,7 @@
                                           :key file'
                                           :source (pulumi/asset.FileAsset. file-path)
                                           :contentType content-type
-                                          :cacheControl (str "public, max-age="
+                                          :cacheControl (str "max-age="
                                                              cache-max-age
                                                              ", s-maxage="
                                                              cache-s-max-age)})
