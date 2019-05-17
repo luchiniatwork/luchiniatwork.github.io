@@ -1,5 +1,6 @@
 config:
   aws:region: us-east-1
   luchini.nyc:certificate-arn: arn:aws:acm:us-east-1:947016529828:certificate/100df872-e1f3-4484-a4ec-5196d2cb388a
+  luchini.nyc:extra-aliases: '*.luchini.nyc'
   luchini.nyc:path-to-website-contents: resources/public/
   luchini.nyc:target-domain: luchini.nyc

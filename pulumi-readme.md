@@ -11,6 +11,8 @@ aws_access_key_id = your_access_key_id
 aws_secret_access_key = your_secret_access_key
 ```
 
+need route53 hosted zone first
+
 pulumi login
 
 pulumi stack ls

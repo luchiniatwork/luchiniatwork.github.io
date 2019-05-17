@@ -1,16 +1,11 @@
 (ns infra.main
   (:require ["@pulumi/aws" :as aws]
             ["@pulumi/pulumi" :as pulumi]
+            [clojure.string :as string]
             [goog :as goog]
             [infra.cloudfront :as cloudfront]
+            [infra.route53 :as route53]
             [infra.s3 :as s3]))
-
-#_(def config-obj (pulumi/Config.))
-
-#_(def config
-    {:path-to-website-contents (.require config-obj "path-to-website-contents")
-     :target-domain (.require config-obj "target-domain")
-     :certificate-arn (.require config-obj "certificate-arn")})
 
 (def exportable (atom {}))
 
@@ -22,6 +17,9 @@
   {:config/path-to-website-contents (.require config-obj "path-to-website-contents")
    :config/target-domain (.require config-obj "target-domain")
    :config/certificate-arn (.require config-obj "certificate-arn")
+   :config/extra-aliases (-> config-obj
+                             (.get "extra-aliases")
+                             (string/split #","))
    :config/cache-max-age (or (.get config-obj "cache-max-age") two-hours)
    :config/cache-s-max-age (or (.get config-obj "cache-s-max-age") an-year)})
 
@@ -32,7 +30,8 @@
       (-> (pulumi/Config.)
           init-config-map
           s3/run
-          cloudfront/run)]
+          cloudfront/run
+          route53/run)]
   (swap! exportable assoc
 
          :content-bucket-name
@@ -50,15 +49,13 @@
          :target-url
          (str "https://" target-domain)))
 
-#_(let [{:keys [path-to-website-contents target-domain]} config
-        {:keys [bucket-name website-url]} (s3/run
-                                            path-to-website-contents
-                                            target-domain)]
-    (swap! exportable assoc :bucket-name bucket-name)
-    (swap! exportable assoc :website-url website-url))
-
-(goog/exportSymbol "content-bucket-name" (:content-bucket-name @exportable))
-(goog/exportSymbol "content-bucket-website-endpoint" (:content-bucket-website-endpoint @exportable))
-(goog/exportSymbol "log-bucket-name" (:log-bucket-name @exportable))
-(goog/exportSymbol "cloudfront-domain" (:cloudfront-domain @exportable))
-(goog/exportSymbol "target-url" (:target-url @exportable))
+(goog/exportSymbol "content-bucket-name"
+                   (:content-bucket-name @exportable))
+(goog/exportSymbol "content-bucket-website-endpoint"
+                   (:content-bucket-website-endpoint @exportable))
+(goog/exportSymbol "log-bucket-name"
+                   (:log-bucket-name @exportable))
+(goog/exportSymbol "cloudfront-domain"
+                   (:cloudfront-domain @exportable))
+(goog/exportSymbol "target-url"
+                   (:target-url @exportable))
