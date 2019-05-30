@@ -3,7 +3,9 @@
             ["@pulumi/pulumi" :as pulumi]
             [clojure.string :as string]
             [goog :as goog]
+            [infra.apigateway :as apigateway]
             [infra.cloudfront :as cloudfront]
+            [infra.lambda :as lambda]
             [infra.route53 :as route53]
             [infra.s3 :as s3]))
 
@@ -30,6 +32,8 @@
       (-> (pulumi/Config.)
           init-config-map
           s3/run
+          lambda/run
+          #_apigateway/run
           cloudfront/run
           route53/run)]
   (swap! exportable assoc

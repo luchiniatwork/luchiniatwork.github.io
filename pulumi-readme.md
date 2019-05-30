@@ -44,3 +44,19 @@ curl -X POST -s --data-urlencode 'input@style.css' https://cssminifier.com/raw >
 
 ## Invalidate cache
 aws cloudfront create-invalidation --distribution-id <dist-id> --paths /index.html
+
+
+
+------
+
+# Need to add to pulumi
+
+lamda
+- compile lambda
+- create lambda
+api gateway
+- create api
+- create stage
+- deploy api
+cloudfront
+- distro to api
