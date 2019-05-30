@@ -4,5 +4,12 @@
  :aliases
  {:infra
   {:extra-deps {org.clojure/clojurescript {:mvn/version "1.10.520"}}
-   :extra-paths ["infra_scripts"]
-   :main-opts ["--main" "infra.build"]}}}
+   :extra-paths ["infra_scripts"]}
+
+  ;; depends on :infra
+  :build
+  {:main-opts ["--main" "infra.build"]}
+
+  ;; depends on :infra
+  :build-lambda
+  {:main-opts ["--main" "infra.build-lambda"]}}}
