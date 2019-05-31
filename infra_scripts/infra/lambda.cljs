@@ -18,5 +18,7 @@
                          #js {:code (pulumi/asset.FileArchive. "out/lambda/redirect.zip")
                               :handler "index.infra.lambdas.redirect.redirect_request_handler"
                               :role (.-arn iam)
-                              :runtime "nodejs10.x"})])
-  opts)
+                              :runtime "nodejs10.x"})]
+    (merge opts
+           {:lambda/redirect-lambda-arn (.-arn redirect-lambda)
+            :lambda/redirect-lambda-name (.-name redirect-lambda)})))

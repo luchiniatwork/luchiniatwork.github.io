@@ -15,27 +15,30 @@
 
 (def an-year (* 365 24 60 60))
 
-(defn init-config-map [config-obj]
-  {:config/path-to-website-contents (.require config-obj "path-to-website-contents")
-   :config/target-domain (.require config-obj "target-domain")
-   :config/certificate-arn (.require config-obj "certificate-arn")
-   :config/extra-aliases (-> config-obj
-                             (.get "extra-aliases")
-                             (string/split #","))
-   :config/cache-max-age (or (.get config-obj "cache-max-age") two-hours)
-   :config/cache-s-max-age (or (.get config-obj "cache-s-max-age") an-year)})
+(defn init-config-map []
+  (let [config-obj (pulumi/Config.)
+        aws-config-obj (pulumi/Config. "aws")]
+    {:config/path-to-website-contents (.require config-obj "path-to-website-contents")
+     :config/target-domain (.require config-obj "target-domain")
+     :config/certificate-arn (.require config-obj "certificate-arn")
+     :config/extra-aliases (-> config-obj
+                               (.get "extra-aliases")
+                               (string/split #","))
+     :config/cache-max-age (or (.get config-obj "cache-max-age") two-hours)
+     :config/cache-s-max-age (or (.get config-obj "cache-s-max-age") an-year)
+     :config/region (.require aws-config-obj "region")}))
 
 (let [{:keys [config/target-domain
               s3/content-bucket
               s3/log-bucket
               cloudfront/domain-name] :as infra-map}
-      (-> (pulumi/Config.)
-          init-config-map
+      (-> (init-config-map)
           s3/run
           lambda/run
-          #_apigateway/run
+          apigateway/run
           cloudfront/run
           route53/run)]
+
   (swap! exportable assoc
 
          :content-bucket-name
