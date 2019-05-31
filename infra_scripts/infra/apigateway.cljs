@@ -64,4 +64,6 @@
                                "root"
                                root-resource
                                uri)
-    opts))
+    (merge opts
+           {:apigateway/invoke-url (.-invokeUrl deployment)
+            :apigateway/deployment deployment})))

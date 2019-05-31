@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "@cljs-oss/module-deps": "^1.1.1",
-    "@pulumi/aws": "^0.18.6",
+    "@pulumi/aws": "^0.18.7",
     "@pulumi/pulumi": "^0.17.14",
     "mime": "^2.4.3"
   }
