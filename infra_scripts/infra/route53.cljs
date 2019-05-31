@@ -31,13 +31,15 @@
 
 (defn run [{:keys [config/target-domain
                    config/extra-aliases
-                   cloudfront/domain-name
-                   cloudfront/hosted-zone-id] :as opts}]
+                   cloudfront/static-domain-name
+                   cloudfront/static-hosted-zone-id
+                   cloudfront/redirect-domain-name
+                   cloudfront/redirect-hosted-zone-id] :as opts}]
   (create-alias-record! target-domain
-                        domain-name
-                        hosted-zone-id)
+                        static-domain-name
+                        static-hosted-zone-id)
   (doseq [extra-alias extra-aliases]
     (create-alias-record! extra-alias
-                          domain-name
-                          hosted-zone-id))
+                          redirect-domain-name
+                          redirect-hosted-zone-id))
   opts)

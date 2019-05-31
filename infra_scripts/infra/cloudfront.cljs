@@ -90,5 +90,7 @@
                         :default-ttl-minutes cache-s-max-age
                         :max-ttl-minutes cache-s-max-age
                         :forward-query-string? true}))]
-    (merge opts {:cloudfront/domain-name (.-domainName cdn-static)
-                 :cloudfront/hosted-zone-id (.-hostedZoneId cdn-static)})))
+    (merge opts {:cloudfront/static-domain-name (.-domainName cdn-static)
+                 :cloudfront/static-hosted-zone-id (.-hostedZoneId cdn-static)
+                 :cloudfront/redirect-domain-name (.-domainName cdn-redirect)
+                 :cloudfront/redirect-hosted-zone-id (.-hostedZoneId cdn-redirect)})))

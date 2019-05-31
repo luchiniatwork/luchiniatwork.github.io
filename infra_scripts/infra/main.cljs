@@ -31,7 +31,9 @@
 (let [{:keys [config/target-domain
               s3/content-bucket
               s3/log-bucket
-              cloudfront/domain-name] :as infra-map}
+              apigateway/invoke-url
+              cloudfront/static-domain-name
+              cloudfront/redirect-domain-name] :as infra-map}
       (-> (init-config-map)
           s3/run
           lambda/run
@@ -50,8 +52,14 @@
          :log-bucket-name
          (:name log-bucket)
 
-         :cloudfront-domain
-         domain-name
+         :apigateway-invoke-url
+         invoke-url
+         
+         :static-cloudfront-domain
+         static-domain-name
+
+         :redirect-cloudfront-domain
+         redirect-domain-name
 
          :target-url
          (str "https://" target-domain)))
@@ -62,7 +70,11 @@
                    (:content-bucket-website-endpoint @exportable))
 (goog/exportSymbol "log-bucket-name"
                    (:log-bucket-name @exportable))
-(goog/exportSymbol "cloudfront-domain"
-                   (:cloudfront-domain @exportable))
+(goog/exportSymbol "apigateway-invoke-url"
+                   (:apigateway-invoke-url @exportable))
+(goog/exportSymbol "static-cloudfront-domain"
+                   (:static-cloudfront-domain @exportable))
+(goog/exportSymbol "redirect-cloudfront-domain"
+                   (:redirect-cloudfront-domain @exportable))
 (goog/exportSymbol "target-url"
                    (:target-url @exportable))
