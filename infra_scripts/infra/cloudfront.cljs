@@ -92,5 +92,7 @@
                         :forward-query-string? true}))]
     (merge opts {:cloudfront/static-domain-name (.-domainName cdn-static)
                  :cloudfront/static-hosted-zone-id (.-hostedZoneId cdn-static)
+                 :cloudfront/static-distribution-id (.-id cdn-static)
                  :cloudfront/redirect-domain-name (.-domainName cdn-redirect)
-                 :cloudfront/redirect-hosted-zone-id (.-hostedZoneId cdn-redirect)})))
+                 :cloudfront/redirect-hosted-zone-id (.-hostedZoneId cdn-redirect)
+                 :cloudfront/redirect-distribution-id (.-id cdn-redirect)})))
