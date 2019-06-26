@@ -47,9 +47,6 @@
                         #js {:parentId (.-rootResourceId redirect-api)
                              :restApi (.-id redirect-api)
                              :pathPart "{proxy+}"})
-        root-resource (pulumi/output
-                       (aws/apigateway.getResource #js {:path "/"
-                                                        :restApiId (.-id redirect-api)}))
         deployment (aws/apigateway.Deployment.
                     "default"
                     #js {:restApi (.-id redirect-api)
@@ -60,10 +57,14 @@
                                "proxy"
                                proxy-resource
                                uri)
-    (create-proxy-integration! redirect-api
-                               "root"
-                               root-resource
-                               uri)
+    #_(let [root-resource (pulumi/output
+                           (aws/apigateway.getResource #js {:path "/"
+                                                            :restApiId (.-id redirect-api)}
+                                                       #js {:dependsOn [redirect-api]}))]
+        (create-proxy-integration! redirect-api
+                                   "root"
+                                   root-resource
+                                   uri))
     (merge opts
            {:apigateway/invoke-url (.-invokeUrl deployment)
             :apigateway/deployment deployment})))
