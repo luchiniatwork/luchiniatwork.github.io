@@ -1,8 +1,31 @@
-{:deps
- {org.clojure/clojure {:mvn/version "1.10.1"}}
+{:paths ["src" "resources"]
+
+ :deps
+ {;; Injection of dependency platform
+  integrant                          {:mvn/version "0.7.0"}
+  ;; Reitit for web routing
+  metosin/reitit-core                {:mvn/version "0.3.7"}
+  ;; Ring handlers for reitit
+  metosin/reitit-ring                {:mvn/version "0.3.7"}
+  ;; Our beloved
+  org.clojure/clojure                {:mvn/version "1.10.1"}
+  ;; HTTP server powered by Undertow
+  org.immutant/web                   {:mvn/version "2.1.10"}
+  ;; Ring middleware for content-type wrapping
+  ring-middleware-format             {:mvn/version "0.7.4"}
+  ;; Ring default middlewares
+  ring/ring-defaults                 {:mvn/version "0.3.2"}
+  ;; Ring logger middleware
+  ring-logger                        {:mvn/version "1.0.1"}}
 
  :aliases
- {:infra
+ {:dev
+  {:extra-paths ["dev"]
+   :extra-deps
+   {;; Reloaded workflow for Integrant
+    integrant/repl                   {:mvn/version "0.3.1"}}}
+
+  :infra
   {:extra-deps {org.clojure/clojurescript    {:mvn/version "1.10.520"}
                 com.cognitect.aws/api        {:mvn/version "0.8.305"}
                 com.cognitect.aws/endpoints  {:mvn/version "1.1.11.559"}
